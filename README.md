@@ -1,4 +1,6 @@
-# Vue2 App Hobby Lists
+# Vue.JS 2 Code Sample App of Hobby Lists
+
+## [Live](https://mayoujin.github.io/vue2-js-app-hobby/)
 
 ## Project setup
 ```
@@ -7,18 +9,10 @@ npm install
 
 ### Compiles and hot-reloads for development
 ```
-npm run serve
+npm start
 ```
 
 ### Compiles and minifies for production
 ```
 npm run build
 ```
-
-### Lints and fixes files
-```
-npm run lint
-```
-
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
