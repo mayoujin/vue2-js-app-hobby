@@ -131,6 +131,7 @@ export default {
       if (false === isValidHobbyData(hobbyData)) {
         this.$refs.addNewInput.value = hobbyData.hobby
         this.isAddError = true
+        this.isBusy = false
         return
       }
       const result = await this.$storage.actions.addNewHobby(hobbyData)
