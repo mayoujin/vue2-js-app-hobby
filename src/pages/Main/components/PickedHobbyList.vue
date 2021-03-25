@@ -91,7 +91,6 @@ export default {
   data: () => ({
     isAddError: false,
     isBusy: false,
-    statuses: {},
   }),
   components: {
     HobbyList,
@@ -153,7 +152,6 @@ export default {
       this.isBusy = true
       await this.$storage.actions.dropHobby(hobby)
       this.isBusy = false
-      this.statuses = this.statuses.filter(({ hash }) => hash === hobby.hash)
     },
     /**
      *
