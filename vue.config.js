@@ -3,7 +3,6 @@ const { isProd, argv } = require('./.webpack/utils')
 
 module.exports = {
   /* build, dev, ci params */
-  /* build, dev, ci params */
   lintOnSave: false,
   productionSourceMap: !!argv('sourcemaps'),
   publicPath: argv('publicPath') || '/',
