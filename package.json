@@ -1,11 +1,11 @@
 {
-  "name": "vue2-hobby-app",
+  "name": "vue2-js-app-hobby",
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "vue-cli-service build",
-    "lint": "vue-cli-service lint",
-    "start": "vue-cli-service serve"
+    "build": "npx vue-cli-service build",
+    "lint": "npx vue-cli-service lint",
+    "start": "npx vue-cli-service serve"
   },
   "dependencies": {
     "axios": "^0.21.1",
@@ -24,6 +24,7 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.13.10",
     "@babel/plugin-proposal-throw-expressions": "^7.12.13",
+    "@vue/cli": "^4.5.12",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-plugin-router": "~4.5.0",
