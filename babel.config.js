@@ -1,8 +1,9 @@
 module.exports = {
   presets: ['@vue/cli-plugin-babel/preset'],
   plugins: [
-    '@babel/plugin-proposal-private-methods',
-    '@babel/plugin-proposal-class-properties',
+    ['@babel/plugin-proposal-decorators', { legacy: true }],
+    ['@babel/plugin-proposal-private-methods', { loose: true }],
+    ['@babel/plugin-proposal-class-properties', { loose: true }],
     '@babel/plugin-proposal-throw-expressions',
   ],
 }

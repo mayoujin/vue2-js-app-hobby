@@ -1,7 +1,6 @@
 <template>
   <ErrorBoundary #boundary="{ hasError }" tag="div" stop-propagation>
     <template v-if="hasError">
-      <!-- Activity List Error Placeholder  -->
       <div>Не удалось загрузить список ваших хобби</div>
     </template>
     <template v-else>
@@ -13,12 +12,18 @@
             [$style['adder__error']]: isAddError,
             [$style['adder__input']]: true,
           }"
-          :disabled="isBusy"
+          :disabled="isAddingNew"
           @keypress.enter="addNewHobby"
           @keypress="resetAdderError"
         />
-        <button @click="addNewHobby" :disabled="isBusy">добавить</button>
+        <button @click="addNewHobby" :disabled="isBusy">
+          добавить
+        </button>
+        <div v-if="addingErrorString" :class="$style['adder__error-message']">
+          {{ addingErrorString }}
+        </div>
       </div>
+
       <HobbyList :hobbies="pickedHobbies">
         <template #actions="{ hobby }">
           <button
@@ -43,7 +48,7 @@
             v-if="meta[hobby.uuid].isOptimistic"
             :class="$style['optimistic']"
           >
-            {{ meta[hobby.uuid].status }}
+            (...обрабатывается)
           </div>
         </template>
         <template #empty>
@@ -56,89 +61,59 @@
 
 <script>
 import HobbyList from '@/components/HobbyList'
-import { ifHobbyInList, isValidHobbyData } from '@/domain/entities/hobby'
 import { createResource } from 'vue-async-manager'
-import { HobbyOptimistic } from '@/app/models/hobby-optimistic'
-
-/**
- * @param {string} hobbyName
- * @return {string}
- */
-const sanitizeHobbyName = (hobbyName) => {
-  return hobbyName.trim()
-}
-
-const buildHobbyMeta = (hobby, hobbyList) => ({
-  [hobby.uuid]: {
-    isPicked: ifHobbyInList(hobby, hobbyList),
-    status: hobby instanceof HobbyOptimistic ? '(...обрабатывается)' : '',
-    isOptimistic: hobby instanceof HobbyOptimistic,
-  },
-})
-
-/**
- * @param {string} hobbyName
- * @return {{hobbyData: {hobby: string}}}
- */
-const buildHobbyData = (hobbyName) => {
-  const name = sanitizeHobbyName(hobbyName)
-  const hobbyData = { hobby: name }
-  return hobbyData
-}
+import { PickedHobbyListViewModel } from './domain/PickedHobbyListViewModel'
 
 export default {
   name: 'PickedHobbyList',
   data: () => ({
+    vm: null,
     isAddError: false,
-    isBusy: false,
+    addingErrorString: null,
   }),
   components: {
     HobbyList,
   },
-  // COMPUTED
   computed: {
     pickedHobbies() {
-      return this.$storage.getters.pickedHobbies
+      return this.vm.pickedHobbies
     },
     meta() {
-      return this.pickedHobbies.reduce(
-        (acc, hobby) => ({
-          ...acc,
-          ...buildHobbyMeta(hobby, this.$storage.getters.optionalHobbies),
-        }),
-        {},
-      )
+      return this.vm.meta
+    },
+    isBusy() {
+      return this.isDropping || this.isAddingNew
+    },
+    isAddingNew() {
+      return this.vm.tasks.get(this.vm.addNewHobby).isRunning
+    },
+    isDropping() {
+      return this.vm.tasks.get(this.vm.dropHobby).isRunning
     },
   },
   created() {
-    createResource(() => this.fetchHobbies()).read()
+    this.vm = new PickedHobbyListViewModel({
+      state: this.$data,
+      storage: this.$storage,
+    })
+    createResource(() => this.vm.fetchHobbies()).read()
   },
   methods: {
     /**
      * @return Promise<void>
      */
-    async fetchHobbies() {
-      await this.$storage.actions.fetchPickedHobbies()
-    },
-    /**
-     * @return Promise<void>
-     */
     async addNewHobby() {
-      this.isAddError = false
-      this.isBusy = true
-      const hobbyData = buildHobbyData(this.$refs.addNewInput.value)
-
-      if (false === isValidHobbyData(hobbyData)) {
-        this.$refs.addNewInput.value = hobbyData.hobby
-        this.isAddError = true
-        this.isBusy = false
-        return
-      }
-      const result = await this.$storage.actions.addNewHobby(hobbyData)
-      result.do(() => {
-        this.$refs.addNewInput.value = ''
-      })
-      this.isBusy = false
+      const { addNewInput } = this.$refs
+      const result = await this.vm.addNewHobby(addNewInput.value)
+      result
+        .do(() => {
+          addNewInput.value = ''
+          this.resetAdderError()
+        })
+        .elseDo((error) => {
+          this.isAddError = true
+          this.addingErrorString = error.message
+        })
     },
     /**
      *
@@ -150,15 +125,14 @@ export default {
       if (false === isConfirmed) {
         return
       }
-      this.isBusy = true
-      await this.$storage.actions.dropHobby(hobby)
-      this.isBusy = false
+      await this.vm.dropHobby(hobby)
     },
     /**
      *
      */
     resetAdderError() {
       this.isAddError = false
+      this.addingErrorString = null
     },
   },
 }
@@ -167,6 +141,7 @@ export default {
 <style module lang="postcss">
 .adder {
   display: flex;
+  flex-wrap: wrap;
   justify-content: flex-start;
   gap: 8px;
   margin-left: 40px;
@@ -179,6 +154,11 @@ export default {
     font-size: 16px;
     padding: 5px 5px;
     margin-left: -10px;
+  }
+  &__error-message {
+    width: 100%;
+    color: red;
+    padding: 5px 0;
   }
 }
 .optimistic {

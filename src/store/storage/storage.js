@@ -108,3 +108,17 @@ export const createStorage = (store) => ({
     },
   },
 })
+
+//const StorageService = class {
+//  #storage
+//  constructor(delegate, { storage }) {
+//    this.#storage = storage
+//  }
+//  get storage() {
+//    return this.#storage
+//  }
+//}
+//
+//export const withStorageService = () => {
+//  return StorageService
+//}
