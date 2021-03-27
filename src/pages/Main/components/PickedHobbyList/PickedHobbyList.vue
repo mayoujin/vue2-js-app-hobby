@@ -67,7 +67,6 @@ import { PickedHobbyListViewModel } from './domain/PickedHobbyListViewModel'
 export default {
   name: 'PickedHobbyList',
   data: () => ({
-    vm: null,
     isAddError: false,
     addingErrorString: null,
   }),
@@ -106,9 +105,10 @@ export default {
       const { addNewInput } = this.$refs
       const result = await this.vm.addNewHobby(addNewInput.value)
       result
-        .do(() => {
+        .do((addedNewHobby) => {
           addNewInput.value = ''
           this.resetAdderError()
+          console.log({ addedNewHobby })
         })
         .elseDo((error) => {
           this.isAddError = true

@@ -1,6 +1,8 @@
+import { createTaskStateObservable } from '@/app/services/state-observable'
+
 export class Task {
   #command
-  constructor(command, status) {
+  constructor(command) {
     this.#command = command
   }
   run(...args) {
@@ -28,7 +30,7 @@ export class CancelableTask {
 export class StateAwareTask {
   #task
   #state
-  constructor(task, state) {
+  constructor(task, state = createTaskStateObservable()) {
     this.#task = task
     this.#state = state
   }
@@ -48,6 +50,14 @@ export class StateAwareTask {
   get isRunning() {
     return this.#state.status === 'running'
   }
+}
+
+/**
+ *
+ * @return {StateAwareTask}
+ */
+export const withStateAwareTask = () => {
+  return StateAwareTask
 }
 
 /**

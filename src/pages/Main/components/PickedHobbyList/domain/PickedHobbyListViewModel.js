@@ -1,34 +1,66 @@
 import { ifHobbyInList } from '@/domain/entities/hobby'
-import { HobbyOptimistic } from '@/app/models/HobbyOptimistic'
+import { Optimistic } from '@/app/models/Optimistic'
+import { StateAwareTask, Task, withStateAwareTask } from '@/app/services'
 import { AddNewHobbyUseCase } from '@/pages/Main/components/PickedHobbyList/domain/AddNewHobbyUseCase'
-import { createTaskStateObservable, StateAwareTask, Task } from '@/app/services'
 import { DropHobbyUseCase } from '@/pages/Main/components/PickedHobbyList/domain/DropHobbyUseCase'
 
 const buildHobbyMeta = (hobby, hobbyList) => ({
   [hobby.uuid]: {
     isPicked: ifHobbyInList(hobby, hobbyList),
-    isOptimistic: hobby instanceof HobbyOptimistic,
+    isOptimistic: hobby instanceof Optimistic,
   },
 })
+
+class AddNewHobbyTask extends Task {}
+class DropHobbyTask extends Task {}
 
 /**
  *
  */
 export class PickedHobbyListViewModel {
-  #state
   #storage
   #tasks = new Map()
 
-  isBusy = false
-
-  constructor({ state, storage }) {
-    this.#state = state
+  constructor({ storage }) {
     this.#storage = storage
-    this.#initTasks()
+    this.#setTasks()
   }
+
+  /**
+   *
+   */
+  #setTasks() {
+    this.#tasks.set(
+      this.addNewHobby,
+      new StateAwareTask(
+        new AddNewHobbyTask(
+          new AddNewHobbyUseCase({
+            storage: this.#storage,
+          }),
+        ),
+      ),
+    )
+
+    this.#tasks.set(
+      this.dropHobby,
+      new StateAwareTask(
+        new DropHobbyTask(new DropHobbyUseCase({ storage: this.#storage })),
+      ),
+    )
+  }
+
+  /**
+   *
+   * @return {any}
+   */
   get pickedHobbies() {
     return this.#storage.getters.pickedHobbies
   }
+
+  /**
+   *
+   * @return {*}
+   */
   get meta() {
     return this.pickedHobbies.reduce(
       (acc, hobby) => ({
@@ -69,29 +101,6 @@ export class PickedHobbyListViewModel {
       .run({ rawHobbyString })
 
     return result
-  }
-
-  #initTasks() {
-    const addNewHobbyUseCase = new AddNewHobbyUseCase({
-      storage: this.#storage,
-    })
-    debugger
-    this.#tasks.set(
-      this.addNewHobby,
-      new StateAwareTask(
-        new Task(addNewHobbyUseCase),
-        createTaskStateObservable(),
-      ),
-    )
-
-    const dropHobbyUseCase = new DropHobbyUseCase({ storage: this.#storage })
-    this.#tasks.set(
-      this.dropHobby,
-      new StateAwareTask(
-        new Task(dropHobbyUseCase),
-        createTaskStateObservable(),
-      ),
-    )
   }
 
   get tasks() {

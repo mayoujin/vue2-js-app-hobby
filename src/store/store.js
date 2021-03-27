@@ -16,7 +16,7 @@ import {
 } from './actions.type'
 
 import { Hobby, isEqual } from '@/domain/entities/hobby'
-import { createHobbyOptimistic } from '@/app/models/HobbyOptimistic'
+import { createHobbyOptimistic } from '@/app/models/Optimistic'
 
 const isEqualInstances = ({ uuid: uuidOne }, { uuid: uuidTwo }) =>
   uuidOne === uuidTwo
