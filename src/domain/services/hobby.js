@@ -1,5 +1,5 @@
-//import { apiClient } from '@/api'
-//import { create as createRequest } from '@/api/FrontendApiRequest'
+import { apiClient } from '@/api'
+import { create as createRequest } from '@/api/FrontendApiRequest'
 import { Hobby } from '@/domain/entities/hobby'
 import {
   optionalHobbiesDataResponseMock,
@@ -12,10 +12,10 @@ import {
  * @return {Promise<Hobby[]>}
  */
 export const getPickedHobbies = async () => {
-  //const hobbiesRequest = createRequest('/hobbies')
-  //const hobbiesDataRequest = async () => apiClient.request(hobbiesRequest)
-  const hobbiesData = await pickedHobbiesDataResponseMock()
-  const hobbies = hobbiesData.map((hobbyData) => new Hobby(hobbyData))
+  const hobbiesRequest = createRequest('/hobbies-picked')
+  //const hobbyListData = await pickedHobbiesDataResponseMock()
+  const hobbyListData = await apiClient.request(hobbiesRequest)
+  const hobbies = hobbyListData.map((hobbyData) => new Hobby(hobbyData))
 
   return hobbies
 }
@@ -25,10 +25,10 @@ export const getPickedHobbies = async () => {
  * @return {Promise<Hobby[]>}
  */
 export const getOptionalHobbies = async () => {
-  //const hobbiesRequest = createRequest('/hobbies')
-  //const hobbiesDataRequest = async () => apiClient.request(hobbiesRequest)
-  const hobbiesData = await optionalHobbiesDataResponseMock()
-  const hobbies = hobbiesData.map((hobbyData) => new Hobby(hobbyData))
+  const hobbiesRequest = createRequest('/hobbies-optional')
+  const hobbyListData = await apiClient.request(hobbiesRequest)
+  //const hobbyListData = await optionalHobbiesDataResponseMock()
+  const hobbies = hobbyListData.map((hobbyData) => new Hobby(hobbyData))
 
   return hobbies
 }
@@ -39,7 +39,13 @@ export const getOptionalHobbies = async () => {
  */
 export const addNewHobby = async (hobbyDTO) => {
   console.info(`Adding New Hobby:[${hobbyDTO.hobby}]...`)
-  return new Hobby(await pickOrAddHobbyResponseMock(hobbyDTO))
+  const hobbyAddRequest = createRequest('/hobbies-picked', hobbyDTO, {
+    method: 'POST',
+  })
+  const hobbyData = await apiClient.request(hobbyAddRequest)
+
+  //return new Hobby(await pickOrAddHobbyResponseMock(hobbyDTO))
+  return new Hobby(hobbyData)
 }
 
 /**
@@ -49,7 +55,12 @@ export const addNewHobby = async (hobbyDTO) => {
  */
 export const pickHobby = async (hobby) => {
   console.info(`Picking Hobby:[${hobby.hobby}]...`)
-  return new Hobby(await pickOrAddHobbyResponseMock(hobby.toDTO()))
+  const hobbyAddRequest = createRequest('/hobbies-picked', hobby.toDTO(), {
+    method: 'POST',
+  })
+  const hobbyData = await apiClient.request(hobbyAddRequest)
+
+  return new Hobby(hobbyData)
 }
 
 /**
@@ -59,5 +70,14 @@ export const pickHobby = async (hobby) => {
  */
 export const dropHobby = async (hobby) => {
   console.info(`Deleting Hobby:[${hobby.hobby}]...`)
-  return new pickOrAddHobbyResponseMock(true)
+  const hobbyDropRequest = createRequest(
+    `/hobbies-picked/${hobby.toDTO().id}`,
+    {},
+    {
+      method: 'DELETE',
+    },
+  )
+  await apiClient.request(hobbyDropRequest)
+  //return new pickOrAddHobbyResponseMock(true)
+  return hobby
 }
