@@ -1,6 +1,6 @@
 import Vue from 'vue'
 
-import { install as installPlugins } from '@/plugins'
+import { install as installPlugins, apolloProvider } from '@/plugins'
 import '@/.boot'
 
 import router from '@/router'
@@ -14,6 +14,7 @@ Vue.config.productionTip = false
 const app = new Vue({
   router,
   store,
+  apolloProvider,
   render: (h) => h(App),
 })
 

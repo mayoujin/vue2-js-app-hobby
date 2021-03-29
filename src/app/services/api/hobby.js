@@ -5,7 +5,7 @@ import {
   optionalHobbiesDataResponseMock,
   pickedHobbiesDataResponseMock,
   pickOrAddHobbyResponseMock,
-} from '@/domain/services/simple-mocks'
+} from '@/app/services/api/simple-mocks'
 
 /**
  * Fetch picked hobby list

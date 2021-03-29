@@ -11,7 +11,10 @@ import { ok, err, Result } from 'resulty'
 import { throwAsyncException } from '@/utils'
 
 import { Hobby } from '@/components/HobbyList/types'
-import { hobby as hobbyServices } from '@/domain/services'
+import { hobby as hobbyServices } from '@/app/services/api'
+
+import { mutationAddHobby } from '@/store/apollo'
+import { apolloClient } from 'boot/apollo-client'
 
 export const createStorage = (store) => ({
   getters: store.getters,
@@ -89,16 +92,23 @@ export const createStorage = (store) => ({
     /**
      *
      * @param {{hobby?: string}} hobbyData
+     * @param callService
      * @return {Promise<Result<Hobby, Error>>}
      */
-    async addNewHobby(hobbyData) {
+    async addNewHobby(hobbyData, callService) {
       const { commit, rollback } = await store.dispatch(
         HOBBY_ADD_OPTIMISTIC,
         new Hobby(hobbyData),
       )
       try {
-        const hobby = await hobbyServices.addNewHobby(hobbyData)
+        const hobby = await callService(hobbyData)
         commit(hobby)
+
+        apolloClient.mutate({
+          mutation: mutationAddHobby,
+          variables: { hobby },
+        })
+
         return ok(hobby)
       } catch (error) {
         rollback()

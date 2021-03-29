@@ -1,8 +1,10 @@
+import Vue from 'vue'
 import { ifHobbyInList } from '@/domain/entities/hobby'
 import { Optimistic } from '@/app/models/Optimistic'
-import { StateAwareTask, Task, withStateAwareTask } from '@/app/services'
+import { StateAwareTask, Task } from '@/infra/services'
 import { AddNewHobbyUseCase } from '@/pages/Main/components/PickedHobbyList/domain/AddNewHobbyUseCase'
 import { DropHobbyUseCase } from '@/pages/Main/components/PickedHobbyList/domain/DropHobbyUseCase'
+import { queryHobbies } from '@/store/apollo'
 
 const buildHobbyMeta = (hobby, hobbyList) => ({
   [hobby.uuid]: {

@@ -17,6 +17,8 @@ export class Hobby extends BaseApplicationModel {
      *
      */
     this.hash = md5(this.hobby)
+
+    return Object.freeze(this)
   }
 
   toDTO() {

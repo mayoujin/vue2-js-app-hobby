@@ -45,7 +45,7 @@ export class ErrorService {
       console.log(error, 'test')
       if (error) {
         scope.onError(error)
-        console.log(message, url, lineNo, columnNo, error)
+        console.error(message, url, lineNo, columnNo, error)
       }
     }
   }
@@ -54,11 +54,11 @@ export class ErrorService {
 
   static logRocketLogEngine(error) {
     // Implement LogRocket Engine here
-    console.log(error, 'LogRocket')
+    console.error(error, 'LogRocket')
   }
 
   static sentryLogEngine(error) {
     // Implement Sentry Engine here
-    console.log(error, 'Sentry')
+    console.error(error, 'Sentry')
   }
 }

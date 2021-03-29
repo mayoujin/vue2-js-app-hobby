@@ -1,4 +1,4 @@
-import { createTaskStateObservable } from '@/app/services/state-observable'
+import { createTaskStateObservable } from '@/infra/services/state-observable'
 
 export class Task {
   #command

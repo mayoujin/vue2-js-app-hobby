@@ -9,13 +9,17 @@
     "start": "npx vue-cli-service serve"
   },
   "dependencies": {
+    "apollo-boost": "^0.4.9",
     "axios": "^0.21.1",
     "bem-css-modules": "^1.4.2",
     "core-js": "^3.6.5",
+    "graphql": "^14.7.0",
     "md5": "^2.3.0",
     "resulty": "^3.0.0",
+    "shortid": "^2.2.16",
     "uuid": "^3.4.0",
     "vue": "^2.6.11",
+    "vue-apollo": "^3.0.7",
     "vue-async-manager": "^0.2.1",
     "vue-error-boundary": "^1.0.3",
     "vue-router": "^3.2.0",

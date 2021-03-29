@@ -92,7 +92,6 @@ export default {
   },
   created() {
     this.vm = new PickedHobbyListViewModel({
-      state: this.$data,
       storage: this.$storage,
     })
     createResource(() => this.vm.fetchHobbies()).read()
@@ -105,10 +104,9 @@ export default {
       const { addNewInput } = this.$refs
       const result = await this.vm.addNewHobby(addNewInput.value)
       result
-        .do((addedNewHobby) => {
+        .do(() => {
           addNewInput.value = ''
           this.resetAdderError()
-          console.log({ addedNewHobby })
         })
         .elseDo((error) => {
           this.isAddError = true

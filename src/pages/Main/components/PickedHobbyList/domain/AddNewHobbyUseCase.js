@@ -1,5 +1,7 @@
+import { apolloClient } from 'boot/apollo-client'
 import { err } from 'resulty'
 import { isValidHobbyData } from '@/domain/entities/hobby'
+import { hobby as hobbyService } from '@/app/services/api'
 
 /**
  * @param {string} hobbyName
@@ -21,8 +23,16 @@ const buildHobbyData = (hobbyName) => {
 
 export class AddNewHobbyUseCase {
   #storage
-  constructor({ storage }) {
+  /**
+   * @typedef {import('apollo-client').ApolloClient} ApolloClient
+   * @type ApolloClient
+   */
+  #apollo
+  #service
+  constructor({ storage, apollo = apolloClient, service = hobbyService }) {
     this.#storage = storage
+    this.#apollo = apollo
+    this.#service = service
   }
 
   /**
@@ -41,6 +51,14 @@ export class AddNewHobbyUseCase {
       )
     }
 
-    return await this.#storage.actions.addNewHobby(hobbyData)
+    const callServiceThunk = async (hobbyData) =>
+      this.#service.addNewHobby(hobbyData)
+
+    const result = await this.#storage.actions.addNewHobby(
+      hobbyData,
+      callServiceThunk,
+    )
+
+    return result
   }
 }
