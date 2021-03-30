@@ -1,8 +1,12 @@
 import Vue from 'vue'
 
-export const createTaskStateObservable = () =>
+/**
+ * @typedef {{ status: string, result: *, error: * }} TaskState
+ * @return {TaskState}
+ */
+export const createTaskStateObservable = ({ status }) =>
   Vue.observable({
-    status: 'standby',
+    status: status ?? null,
     result: null,
     error: null,
   })

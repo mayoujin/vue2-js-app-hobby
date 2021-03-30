@@ -23,7 +23,6 @@
           {{ addingErrorString }}
         </div>
       </div>
-
       <HobbyList :hobbies="pickedHobbies">
         <template #actions="{ hobby }">
           <button
@@ -74,26 +73,43 @@ export default {
     HobbyList,
   },
   computed: {
+    /**
+     *
+     */
     pickedHobbies() {
       return this.vm.pickedHobbies
     },
+    /**
+     * @return {boolean}
+     */
     meta() {
       return this.vm.meta
     },
+    /**
+     * @return {boolean}
+     */
     isBusy() {
       return this.isDropping || this.isAddingNew
     },
+    /**
+     * @return {boolean}
+     */
     isAddingNew() {
-      return this.vm.tasks.get(this.vm.addNewHobby).isRunning
+      return this.vm
+        .getTasksByAction(this.vm.addNewHobby)
+        .some(({ isRunning }) => isRunning)
     },
+    /**
+     * @return {boolean}
+     */
     isDropping() {
-      return this.vm.tasks.get(this.vm.dropHobby).isRunning
+      return this.vm
+        .getTasksByAction(this.vm.dropHobby)
+        .some(({ isRunning }) => isRunning)
     },
   },
   created() {
-    this.vm = new PickedHobbyListViewModel({
-      storage: this.$storage,
-    })
+    this.vm = new PickedHobbyListViewModel({ storage: this.$storage })
     createResource(() => this.vm.fetchHobbies()).read()
   },
   methods: {

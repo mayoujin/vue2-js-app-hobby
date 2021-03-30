@@ -1,10 +1,9 @@
-import Vue from 'vue'
-import { ifHobbyInList } from '@/domain/entities/hobby'
+import { createStatefullTask } from '@/infra/services'
 import { Optimistic } from '@/app/models/Optimistic'
-import { StateAwareTask, Task } from '@/infra/services'
+import { ifHobbyInList } from '@/domain/entities/hobby'
+import { BaseViewModel } from '@/pages/Main/components/PickedHobbyList/domain/BaseViewModel'
 import { AddNewHobbyUseCase } from '@/pages/Main/components/PickedHobbyList/domain/AddNewHobbyUseCase'
 import { DropHobbyUseCase } from '@/pages/Main/components/PickedHobbyList/domain/DropHobbyUseCase'
-import { queryHobbies } from '@/store/apollo'
 
 const buildHobbyMeta = (hobby, hobbyList) => ({
   [hobby.uuid]: {
@@ -13,42 +12,22 @@ const buildHobbyMeta = (hobby, hobbyList) => ({
   },
 })
 
-class AddNewHobbyTask extends Task {}
-class DropHobbyTask extends Task {}
-
 /**
  *
  */
-export class PickedHobbyListViewModel {
+export class PickedHobbyListViewModel extends BaseViewModel {
   #storage
-  #tasks = new Map()
-
-  constructor({ storage }) {
-    this.#storage = storage
-    this.#setTasks()
-  }
 
   /**
    *
+   * @param storage
+   * @param state
    */
-  #setTasks() {
-    this.#tasks.set(
-      this.addNewHobby,
-      new StateAwareTask(
-        new AddNewHobbyTask(
-          new AddNewHobbyUseCase({
-            storage: this.#storage,
-          }),
-        ),
-      ),
-    )
-
-    this.#tasks.set(
-      this.dropHobby,
-      new StateAwareTask(
-        new DropHobbyTask(new DropHobbyUseCase({ storage: this.#storage })),
-      ),
-    )
+  constructor({ storage } = {}) {
+    super()
+    if (storage) {
+      this.#storage = storage
+    }
   }
 
   /**
@@ -83,11 +62,16 @@ export class PickedHobbyListViewModel {
 
   /**
    *
-   * @param hobby
+   * @param {Hobby} hobby
    * @return {Promise<Result<boolean, Error>>}
    */
   async dropHobby(hobby) {
-    const result = await this.#tasks.get(this.dropHobby).run({ hobby })
+    const task = createStatefullTask(
+      new DropHobbyUseCase({ storage: this.#storage }),
+    )
+    this.enqueueTask(this.dropHobby, task)
+    const result = await task.run({ hobby })
+
     return result
   }
 
@@ -97,15 +81,15 @@ export class PickedHobbyListViewModel {
    * @return {Promise<Result<Hobby, Error>>}
    */
   async addNewHobby(rawHobbyString) {
-    this.isAddError = false
-    const result = await this.#tasks
-      .get(this.addNewHobby)
-      .run({ rawHobbyString })
+    const task = createStatefullTask(
+      new AddNewHobbyUseCase({
+        storage: this.#storage,
+      }),
+    )
+
+    this.enqueueTask(this.addNewHobby, task)
+    const result = await task.run({ rawHobbyString })
 
     return result
-  }
-
-  get tasks() {
-    return this.#tasks
   }
 }
