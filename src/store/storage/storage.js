@@ -24,14 +24,14 @@ export const createStorage = (store) => ({
      *
      * @return {Promise<Result<Error|Hobby[]>>}
      */
-    async fetchPickedHobbies() {
+    async fetchPickedHobbies(callService) {
       try {
-        const hobbies = await hobbyServices.getPickedHobbies()
+        const hobbies = await callService()
         store.commit(HOBBIES_PICKED_SET, hobbies)
         return ok(hobbies)
-      } catch (e) {
-        throwAsyncException(e)
-        return err(err)
+      } catch (error) {
+        throwAsyncException(error)
+        return err(error)
       }
     },
     /**

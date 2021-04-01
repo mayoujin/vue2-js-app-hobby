@@ -1,13 +1,16 @@
 import md5 from 'md5'
-import { BaseApplicationModel } from '@/app/models/ObjectWithUUID'
+import { BaseModel } from '@/app/models/ObjectWithUUID'
+import { IHobby, IHobbyData } from '@/domain/entities/hobby/hobby.types'
 
-export class Hobby extends BaseApplicationModel {
+/**
+ *
+ */
+export class Hobby extends BaseModel implements IHobby {
   id
   hobby
   hash
   /**
-   * @typedef {{ id?: string, hobby: string }} HobbyDTO
-   * @param {HobbyDTO} data
+   * @param {IHobbyData} data
    */
   constructor(data) {
     super()
@@ -18,7 +21,7 @@ export class Hobby extends BaseApplicationModel {
      */
     this.hash = md5(this.hobby)
 
-    return Object.freeze(this)
+    return this
   }
 
   toDTO() {

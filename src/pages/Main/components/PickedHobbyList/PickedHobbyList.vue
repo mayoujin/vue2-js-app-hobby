@@ -1,6 +1,6 @@
 <template>
   <ErrorBoundary #boundary="{ hasError }" tag="div" stop-propagation>
-    <template v-if="hasError">
+    <template v-if="hasError || hasFetchErrors">
       <div>Не удалось загрузить список ваших хобби</div>
     </template>
     <template v-else>
@@ -94,6 +94,9 @@ export default {
     /**
      * @return {boolean}
      */
+    /**
+     * @return {boolean}
+     */
     isAddingNew() {
       return this.vm
         .getTasksByAction(this.vm.addNewHobby)
@@ -106,6 +109,12 @@ export default {
       return this.vm
         .getTasksByAction(this.vm.dropHobby)
         .some(({ isRunning }) => isRunning)
+    },
+    /**
+     *
+     */
+    hasFetchErrors() {
+      return this.vm.hasFetchErrors
     },
   },
   created() {

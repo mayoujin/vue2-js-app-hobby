@@ -79,7 +79,10 @@ export class Task {
     await Promise.all(this.#awaitQueue)
 
     try {
-      return await this.#command.execute(...args)
+      if (typeof this.#command === 'function') {
+        return this.#command(...args)
+      }
+      return this.#command.execute(...args)
     } finally {
       this.#complete()
     }
@@ -128,7 +131,7 @@ export class StatefullTask extends Task {
 
   /**
    *
-   * @param {Task} task
+   * @param command
    * @param {TaskState} state
    */
   constructor(
@@ -167,6 +170,13 @@ export class StatefullTask extends Task {
    */
   get isRunning() {
     return this.#state.status === TaskStatuses.RUNNING
+  }
+  /**
+   *
+   * @return {boolean}
+   */
+  get hasError() {
+    return this.#state.status === TaskStatuses.FAILED
   }
 
   /**

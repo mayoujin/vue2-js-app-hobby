@@ -1,9 +1,9 @@
 import { DecoratorAware } from '@/app/models/DecorationWithProxy'
 import { Hobby } from '@/domain/entities/hobby'
-import { BaseApplicationModel } from '@/app/models/ObjectWithUUID'
+import { BaseModel } from '@/app/models/ObjectWithUUID'
 
 @DecoratorAware
-export class Optimistic extends BaseApplicationModel {
+export class Optimistic extends BaseModel {
   /**
    *
    * @param {Hobby} hobby

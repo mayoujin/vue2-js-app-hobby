@@ -1,12 +1,14 @@
 module.exports = {
   root: true,
+
   env: {
     node: true,
   },
-  extends: ['plugin:vue/recommended', '@vue/prettier'],
+
   parserOptions: {
-    parser: '@babel/eslint-parser',
+    parser: '@typescript-eslint/parser',
   },
+
   plugins: ['vue'],
 
   // add your custom rules here
@@ -56,4 +58,6 @@ module.exports = {
       },
     ],
   },
+
+  extends: ['plugin:vue/recommended', '@vue/prettier', '@vue/typescript'],
 }

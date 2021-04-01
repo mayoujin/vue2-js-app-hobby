@@ -1,9 +1,11 @@
+import Vue from 'vue'
 import { createStatefullTask } from '@/infra/services'
 import { Optimistic } from '@/app/models/Optimistic'
 import { ifHobbyInList } from '@/domain/entities/hobby'
 import { BaseViewModel } from '@/pages/Main/components/PickedHobbyList/domain/BaseViewModel'
 import { AddNewHobbyUseCase } from '@/pages/Main/components/PickedHobbyList/domain/AddNewHobbyUseCase'
 import { DropHobbyUseCase } from '@/pages/Main/components/PickedHobbyList/domain/DropHobbyUseCase'
+import * as hobbyServices from '@/app/services/api/hobby'
 
 const buildHobbyMeta = (hobby, hobbyList) => ({
   [hobby.uuid]: {
@@ -17,6 +19,9 @@ const buildHobbyMeta = (hobby, hobbyList) => ({
  */
 export class PickedHobbyListViewModel extends BaseViewModel {
   #storage
+  #state = Vue.observable({
+    hasFetchErrors: false,
+  })
 
   /**
    *
@@ -38,6 +43,10 @@ export class PickedHobbyListViewModel extends BaseViewModel {
     return this.#storage.getters.pickedHobbies
   }
 
+  get hasFetchErrors() {
+    return this.#state.hasFetchErrors
+  }
+
   /**
    *
    * @return {*}
@@ -57,7 +66,21 @@ export class PickedHobbyListViewModel extends BaseViewModel {
    * @return {Promise<Result<Error|Hobby[]>>}
    */
   async fetchHobbies() {
-    return await this.#storage.actions.fetchPickedHobbies()
+    const callService = async () => hobbyServices.getPickedHobbies()
+    const command = async () =>
+      this.#storage.actions.fetchPickedHobbies(callService)
+
+    const task = createStatefullTask(command)
+
+    try {
+      const result = await task.run()
+      result.elseDo(() => {
+        this.#state.hasFetchErrors = true
+      })
+      return result
+    } catch (e) {
+      this.#state.hasFetchErrors = true
+    }
   }
 
   /**

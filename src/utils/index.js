@@ -8,7 +8,9 @@ export * from './either'
  * @return void
  */
 export const throwAsyncException = async (exception) => {
-  setTimeout(() => throw exception)
+  setTimeout(() => {
+    throw exception
+  })
 }
 
 export const decorateWithProxy = (target, delegate) => {

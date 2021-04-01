@@ -39,6 +39,26 @@ const pluginDeleteTsChecker = (config) => {
 }
 
 /**
+ * @type ChainWebpackFunction
+ */
+const ruleTsLoaderChangeCompiler = (config) => {
+  const typescriptIsTransformer = require('typescript-is/lib/transform-inline/transformer')
+    .default
+  config.module
+    .rule('ts')
+    .use('ts-loader')
+    .tap((options) => {
+      return {
+        ...options,
+        getCustomTransformers: (program) => ({
+          before: [typescriptIsTransformer(program)],
+        }),
+        transpileOnly: false,
+      }
+    })
+}
+
+/**
  * Disables linting
  *
  * @type ChainWebpackFunction
@@ -51,8 +71,12 @@ const ruleEslintDisable = (config) => {
  *
  * @type ChainWebpackFunction[]
  */
-const configChainsList = [pluginDeleteTsChecker, ruleEslintDisable].concat(
-  isProd() ? [] : configEnableProductionSourceMap,
+const configChainsList = [
+  pluginDeleteTsChecker,
+  ruleTsLoaderChangeCompiler,
+  ruleEslintDisable,
+].concat(
+  isProd() ? [] : [], //configEnableProductionSourceMap,
 )
 
 /**

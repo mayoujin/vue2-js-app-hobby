@@ -1,11 +1,15 @@
 import { apiClient } from '@/api'
+import { is, assertType } from 'typescript-is'
 import { create as createRequest } from '@/api/FrontendApiRequest'
-import { Hobby } from '@/domain/entities/hobby'
+import { Hobby } from '@/domain/entities/hobby/hobby'
+import { IHobbyData } from '@/domain/entities/hobby/hobby.types'
+/*
 import {
   optionalHobbiesDataResponseMock,
   pickedHobbiesDataResponseMock,
   pickOrAddHobbyResponseMock,
 } from '@/app/services/api/simple-mocks'
+*/
 
 /**
  * Fetch picked hobby list
@@ -15,8 +19,12 @@ export const getPickedHobbies = async () => {
   const hobbiesRequest = createRequest('/hobbies-picked')
   //const hobbyListData = await pickedHobbiesDataResponseMock()
   const hobbyListData = await apiClient.request(hobbiesRequest)
-  const hobbies = hobbyListData.map((hobbyData) => new Hobby(hobbyData))
 
+  hobbyListData.forEach((hobbyData) => {
+    assertType<IHobbyData>(hobbyData)
+  })
+
+  const hobbies = hobbyListData.map((hobbyData) => new Hobby(hobbyData))
   return hobbies
 }
 

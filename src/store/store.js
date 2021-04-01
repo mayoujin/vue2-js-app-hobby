@@ -15,7 +15,7 @@ import {
   HOBBY_DROP_OPTIMISTIC as A_HOBBY_DROP_OPTIMISTIC,
 } from './actions.type'
 
-import { Hobby, isEqual } from '@/domain/entities/hobby'
+import { Hobby } from '@/domain/entities/hobby'
 import { createHobbyOptimistic } from '@/app/models/Optimistic'
 
 const isEqualInstances = ({ uuid: uuidOne }, { uuid: uuidTwo }) =>

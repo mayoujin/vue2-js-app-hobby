@@ -3,10 +3,12 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "prebuild": "npm ci",
     "build": "npx vue-cli-service build",
     "lint": "npx vue-cli-service lint",
-    "start": "npx vue-cli-service serve"
+    "hq": "npx hq",
+    "prebuild": "npm ci",
+    "start": "npx vue-cli-service serve",
+    "vite": "node ./bin/vite"
   },
   "dependencies": {
     "apollo-boost": "^0.4.9",
@@ -29,19 +31,29 @@
   "devDependencies": {
     "@babel/eslint-parser": "^7.13.10",
     "@babel/plugin-proposal-throw-expressions": "^7.12.13",
+    "@typescript-eslint/eslint-plugin": "^4.18.0",
+    "@typescript-eslint/parser": "^4.18.0",
     "@vue/cli": "^4.5.12",
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
     "@vue/cli-plugin-router": "~4.5.0",
+    "@vue/cli-plugin-typescript": "~4.5.0",
     "@vue/cli-plugin-vuex": "~4.5.0",
     "@vue/cli-service": "^4.5.12",
     "@vue/eslint-config-prettier": "^6.0.0",
+    "@vue/eslint-config-typescript": "^7.0.0",
     "autoprefixer": "^9.8.6",
     "babel-eslint": "^10.1.0",
+    "babel-plugin-module-resolver": "^4.1.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.2.2",
     "postcss-nested": "^4.2.3",
     "prettier": "^1.19.1",
+    "reflect-metadata": "^0.1.13",
+    "typescript": "~4.1.5",
+    "typescript-is": "^0.18.2",
+    "vite-babel-plugin": "^0.0.2",
+    "vue-cli-plugin-vite": "~0.4.0",
     "vue-template-compiler": "^2.6.11"
   },
   "browserslist": [
